@@ -1,0 +1,857 @@
+<html>
+
+<head>
+
+<style type="text/css">
+input.junkdate {color:red; background:white;}
+input.returndate {color:darkgreen; background:white;}
+</style>
+
+<title>Out of Serivce Log Entry Editor</title>
+
+<SCRIPT LANGUAGE="JavaScript" SRC="CalendarPopup.js"></SCRIPT>
+
+<script type="text/javascript" language="javascript 1.2">
+
+var cal = new CalendarPopup();
+
+<!-- Original:  Richard Gorremans (RichardG@spiritwolfx.com) -->
+<!-- Web Site:  http://www.spiritwolfx.com -->
+
+<!-- Begin
+// Check browser version
+var isNav4 = false, isNav5 = false, isIE4 = false
+var strSeperator = "/"; 
+// If you are using any Java validation on the back side you will want to use the / because 
+// Java date validations do not recognize the dash as a valid date separator.
+var vDateType = 3; // Global value for type of date format
+//                1 = mm/dd/yyyy
+//                2 = yyyy/dd/mm  (Unable to do date check at this time)
+//                3 = dd/mm/yyyy
+var vYearType = 4; //Set to 2 or 4 for number of digits in the year for Netscape
+var vYearLength = 2; // Set to 4 if you want to force the user to enter 4 digits for the year before validating.
+var err = 0; // Set the error code to a default of zero
+if(navigator.appName == "Netscape") {
+if (navigator.appVersion < "5") {
+isNav4 = true;
+isNav5 = false;
+}
+else
+if (navigator.appVersion > "4") {
+isNav4 = false;
+isNav5 = true;
+   }
+}
+else {
+isIE4 = true;
+}
+function DateFormat(vDateName, vDateValue, e, dateCheck, dateType) {
+vDateType = dateType;
+// vDateName = object name
+// vDateValue = value in the field being checked
+// e = event
+// dateCheck 
+// True  = Verify that the vDateValue is a valid date
+// False = Format values being entered into vDateValue only
+// vDateType
+// 1 = mm/dd/yyyy
+// 2 = yyyy/mm/dd
+// 3 = dd/mm/yyyy
+//Enter a tilde sign for the first number and you can check the variable information.
+if (vDateValue == "~") {
+alert("AppVersion = "+navigator.appVersion+" \r\nNav. 4 Version = "+isNav4+" \r\nNav. 5 Version = "+isNav5+" \r\nIE Version = "+isIE4+" \r\nYear Type = "+vYearType+" \r\nDate Type = "+vDateType+" \r\nSeparator = "+strSeperator);
+vDateName.value = "";
+vDateName.focus();
+return true;
+}
+var whichCode = (window.Event) ? e.which : e.keyCode;
+// Check to see if a seperator is already present.
+// bypass the date if a seperator is present and the length greater than 8
+if (vDateValue.length > 8 && isNav4) {
+if ((vDateValue.indexOf("-") >= 1) || (vDateValue.indexOf("/") >= 1))
+return true;
+}
+//Eliminate all the ASCII codes that are not valid
+var alphaCheck = " abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ/-";
+if (alphaCheck.indexOf(vDateValue) >= 1) {
+if (isNav4) {
+vDateName.value = "";
+vDateName.focus();
+vDateName.select();
+return false;
+}
+else {
+vDateName.value = vDateName.value.substr(0, (vDateValue.length-1));
+return false;
+   }
+}
+if (whichCode == 8) //Ignore the Netscape value for backspace. IE has no value
+return false;
+else {
+//Create numeric string values for 0123456789/
+//The codes provided include both keyboard and keypad values
+var strCheck = '47,48,49,50,51,52,53,54,55,56,57,58,59,95,96,97,98,99,100,101,102,103,104,105';
+if (strCheck.indexOf(whichCode) != -1) {
+if (isNav4) {
+if (((vDateValue.length < 6 && dateCheck) || (vDateValue.length == 7 && dateCheck)) && (vDateValue.length >=1)) {
+alert("Invalid Date\r\nPlease Re-Enter");
+vDateName.value = "";
+vDateName.focus();
+vDateName.select();
+return false;
+}
+if (vDateValue.length == 6 && dateCheck) {
+var mDay = vDateName.value.substr(2,2);
+var mMonth = vDateName.value.substr(0,2);
+var mYear = vDateName.value.substr(4,4)
+//Turn a two digit year into a 4 digit year
+if (mYear.length == 2 && vYearType == 4) {
+var mToday = new Date();
+//If the year is greater than 30 years from now use 19, otherwise use 20
+var checkYear = mToday.getFullYear() + 30; 
+var mCheckYear = '20' + mYear;
+if (mCheckYear >= checkYear)
+mYear = '19' + mYear;
+else
+mYear = '20' + mYear;
+}
+var vDateValueCheck = mMonth+strSeperator+mDay+strSeperator+mYear;
+if (!dateValid(vDateValueCheck)) {
+alert("Invalid Date\r\nPlease Re-Enter");
+vDateName.value = "";
+vDateName.focus();
+vDateName.select();
+return false;
+}
+return true;
+}
+else {
+// Reformat the date for validation and set date type to a 1
+if (vDateValue.length >= 8  && dateCheck) {
+if (vDateType == 1) // mmddyyyy
+{
+var mDay = vDateName.value.substr(2,2);
+var mMonth = vDateName.value.substr(0,2);
+var mYear = vDateName.value.substr(4,4)
+vDateName.value = mMonth+strSeperator+mDay+strSeperator+mYear;
+}
+if (vDateType == 2) // yyyymmdd
+{
+var mYear = vDateName.value.substr(0,4)
+var mMonth = vDateName.value.substr(4,2);
+var mDay = vDateName.value.substr(6,2);
+vDateName.value = mYear+strSeperator+mMonth+strSeperator+mDay;
+}
+if (vDateType == 3) // ddmmyyyy
+{
+var mMonth = vDateName.value.substr(2,2);
+var mDay = vDateName.value.substr(0,2);
+var mYear = vDateName.value.substr(4,4)
+vDateName.value = mDay+strSeperator+mMonth+strSeperator+mYear;
+}
+//Create a temporary variable for storing the DateType and change
+//the DateType to a 1 for validation.
+var vDateTypeTemp = vDateType;
+vDateType = 1;
+var vDateValueCheck = mMonth+strSeperator+mDay+strSeperator+mYear;
+if (!dateValid(vDateValueCheck)) {
+alert("Invalid Date\r\nPlease Re-Enter");
+vDateType = vDateTypeTemp;
+vDateName.value = "";
+vDateName.focus();
+vDateName.select();
+return false;
+}
+vDateType = vDateTypeTemp;
+return true;
+}
+else {
+if (((vDateValue.length < 8 && dateCheck) || (vDateValue.length == 9 && dateCheck)) && (vDateValue.length >=1)) {
+alert("Invalid Date\r\nPlease Re-Enter");
+vDateName.value = "";
+vDateName.focus();
+vDateName.select();
+return false;
+         }
+      }
+   }
+}
+else {
+// Non isNav Check
+if (((vDateValue.length < 8 && dateCheck) || (vDateValue.length == 9 && dateCheck)) && (vDateValue.length >=1)) {
+alert("Invalid Date\r\nPlease Re-Enter");
+vDateName.value = "";
+vDateName.focus();
+return true;
+}
+// Reformat date to format that can be validated. mm/dd/yyyy
+if (vDateValue.length >= 8 && dateCheck) {
+// Additional date formats can be entered here and parsed out to
+// a valid date format that the validation routine will recognize.
+if (vDateType == 1) // mm/dd/yyyy
+{
+var mMonth = vDateName.value.substr(0,2);
+var mDay = vDateName.value.substr(3,2);
+var mYear = vDateName.value.substr(6,4)
+}
+if (vDateType == 2) // yyyy/mm/dd
+{
+var mYear = vDateName.value.substr(0,4)
+var mMonth = vDateName.value.substr(5,2);
+var mDay = vDateName.value.substr(8,2);
+}
+if (vDateType == 3) // dd/mm/yyyy
+{
+var mDay = vDateName.value.substr(0,2);
+var mMonth = vDateName.value.substr(3,2);
+var mYear = vDateName.value.substr(6,4)
+}
+if (vYearLength == 4) {
+if (mYear.length < 4) {
+alert("Invalid Date\r\nPlease Re-Enter");
+vDateName.value = "";
+vDateName.focus();
+return true;
+   }
+}
+// Create temp. variable for storing the current vDateType
+var vDateTypeTemp = vDateType;
+// Change vDateType to a 1 for standard date format for validation
+// Type will be changed back when validation is completed.
+vDateType = 1;
+// Store reformatted date to new variable for validation.
+var vDateValueCheck = mMonth+strSeperator+mDay+strSeperator+mYear;
+if (mYear.length == 2 && vYearType == 4 && dateCheck) {
+//Turn a two digit year into a 4 digit year
+var mToday = new Date();
+//If the year is greater than 30 years from now use 19, otherwise use 20
+var checkYear = mToday.getFullYear() + 30; 
+var mCheckYear = '20' + mYear;
+if (mCheckYear >= checkYear)
+mYear = '19' + mYear;
+else
+mYear = '20' + mYear;
+vDateValueCheck = mMonth+strSeperator+mDay+strSeperator+mYear;
+// Store the new value back to the field.  This function will
+// not work with date type of 2 since the year is entered first.
+if (vDateTypeTemp == 1) // mm/dd/yyyy
+vDateName.value = mMonth+strSeperator+mDay+strSeperator+mYear;
+if (vDateTypeTemp == 3) // dd/mm/yyyy
+vDateName.value = mDay+strSeperator+mMonth+strSeperator+mYear;
+} 
+if (!dateValid(vDateValueCheck)) {
+alert("Invalid Date\r\nPlease Re-Enter");
+vDateType = vDateTypeTemp;
+vDateName.value = "";
+vDateName.focus();
+return true;
+}
+vDateType = vDateTypeTemp;
+return true;
+}
+else {
+if (vDateType == 1) {
+if (vDateValue.length == 2) {
+vDateName.value = vDateValue+strSeperator;
+}
+if (vDateValue.length == 5) {
+vDateName.value = vDateValue+strSeperator;
+   }
+}
+if (vDateType == 2) {
+if (vDateValue.length == 4) {
+vDateName.value = vDateValue+strSeperator;
+}
+if (vDateValue.length == 7) {
+vDateName.value = vDateValue+strSeperator;
+   }
+} 
+if (vDateType == 3) {
+if (vDateValue.length == 2) {
+vDateName.value = vDateValue+strSeperator;
+}
+if (vDateValue.length == 5) {
+vDateName.value = vDateValue+strSeperator;
+   }
+}
+return true;
+   }
+}
+if (vDateValue.length == 10&& dateCheck) {
+if (!dateValid(vDateName)) {
+// Un-comment the next line of code for debugging the dateValid() function error messages
+//alert(err);  
+alert("Invalid Date\r\nPlease Re-Enter");
+vDateName.focus();
+vDateName.select();
+   }
+}
+return false;
+}
+else {
+// If the value is not in the string return the string minus the last
+// key entered.
+if (isNav4) {
+vDateName.value = "";
+vDateName.focus();
+vDateName.select();
+return false;
+}
+else
+{
+vDateName.value = vDateName.value.substr(0, (vDateValue.length-1));
+return false;
+         }
+      }
+   }
+}
+function dateValid(objName) {
+var strDate;
+var strDateArray;
+var strDay;
+var strMonth;
+var strYear;
+var intday;
+var intMonth;
+var intYear;
+var booFound = false;
+var datefield = objName;
+var strSeparatorArray = new Array("-"," ","/",".");
+var intElementNr;
+// var err = 0;
+var strMonthArray = new Array(12);
+strMonthArray[0] = "Jan";
+strMonthArray[1] = "Feb";
+strMonthArray[2] = "Mar";
+strMonthArray[3] = "Apr";
+strMonthArray[4] = "May";
+strMonthArray[5] = "Jun";
+strMonthArray[6] = "Jul";
+strMonthArray[7] = "Aug";
+strMonthArray[8] = "Sep";
+strMonthArray[9] = "Oct";
+strMonthArray[10] = "Nov";
+strMonthArray[11] = "Dec";
+//strDate = datefield.value;
+strDate = objName;
+if (strDate.length < 1) {
+return true;
+}
+for (intElementNr = 0; intElementNr < strSeparatorArray.length; intElementNr++) {
+if (strDate.indexOf(strSeparatorArray[intElementNr]) != -1) {
+strDateArray = strDate.split(strSeparatorArray[intElementNr]);
+if (strDateArray.length != 3) {
+err = 1;
+return false;
+}
+else {
+strDay = strDateArray[0];
+strMonth = strDateArray[1];
+strYear = strDateArray[2];
+}
+booFound = true;
+   }
+}
+if (booFound == false) {
+if (strDate.length>5) {
+strDay = strDate.substr(0, 2);
+strMonth = strDate.substr(2, 2);
+strYear = strDate.substr(4);
+   }
+}
+//Adjustment for short years entered
+if (strYear.length == 2) {
+strYear = '20' + strYear;
+}
+strTemp = strDay;
+strDay = strMonth;
+strMonth = strTemp;
+intday = parseInt(strDay, 10);
+if (isNaN(intday)) {
+err = 2;
+return false;
+}
+intMonth = parseInt(strMonth, 10);
+if (isNaN(intMonth)) {
+for (i = 0;i<12;i++) {
+if (strMonth.toUpperCase() == strMonthArray[i].toUpperCase()) {
+intMonth = i+1;
+strMonth = strMonthArray[i];
+i = 12;
+   }
+}
+if (isNaN(intMonth)) {
+err = 3;
+return false;
+   }
+}
+intYear = parseInt(strYear, 10);
+if (isNaN(intYear)) {
+err = 4;
+return false;
+}
+if (intMonth>12 || intMonth<1) {
+err = 5;
+return false;
+}
+if ((intMonth == 1 || intMonth == 3 || intMonth == 5 || intMonth == 7 || intMonth == 8 || intMonth == 10 || intMonth == 12) && (intday > 31 || intday < 1)) {
+err = 6;
+return false;
+}
+if ((intMonth == 4 || intMonth == 6 || intMonth == 9 || intMonth == 11) && (intday > 30 || intday < 1)) {
+err = 7;
+return false;
+}
+if (intMonth == 2) {
+if (intday < 1) {
+err = 8;
+return false;
+}
+if (LeapYear(intYear) == true) {
+if (intday > 29) {
+err = 9;
+return false;
+   }
+}
+else {
+if (intday > 28) {
+err = 10;
+return false;
+      }
+   }
+}
+return true;
+}
+function LeapYear(intYear) {
+if (intYear % 100 == 0) {
+if (intYear % 400 == 0) { return true; }
+}
+else {
+if ((intYear % 4) == 0) { return true; }
+}
+return false;
+}
+//  End -->
+
+/*
+Auto tabbing script- By JavaScriptKit.com
+http://www.javascriptkit.com
+This credit MUST stay intact for use
+*/
+
+function autotab(original,destination){
+if (original.getAttribute&&original.value.length==original.getAttribute("maxlength"))	{
+	destination.focus();}
+}
+
+function chksubcode()	{
+var frm = document.forms["logedit"];
+if (frm.Asset.value != "")	{
+	if (frm.subclass.value == "" || frm.itemclass.value == "")	{
+		alert('Please enter a subcode for this item');
+		frm.itemclass.focus();
+		return true;
+		}
+	return false;
+	}
+}
+
+function chkitem()	{
+var frm = document.forms["logedit"];
+if (frm.Idesc.value == "")	{
+	alert('Please enter an item description');
+	frm.Itemdesc.focus();
+	return true;
+	}
+return false;
+}
+
+function chkloga()	{
+var frm = document.forms["logedit"];
+if (frm.Logby.value == "")	{
+	alert('Please enter your name');
+	frm.Logby.focus();
+	return true;
+	}
+return false;
+}
+
+function chkfault()	{
+var frm = document.forms["logedit"];
+if (frm.Fault.value == "")	{
+	alert("Please describe the problem");
+	frm.Fault.focus();
+	return true;
+	}
+return false;
+}
+
+function validJN(thenam,theval)	{
+if (theval.length >0)	{
+	if (theval.length < 5)	{
+		alert('This should be a 5-digit number');
+		thenam.focus();
+		thenam.value = "";
+		theval = "";
+		};
+	if (!isInteger(theval))	{
+		alert('Numbers only please');
+		thenam.focus();
+		thenam.value = "";
+		};
+	}
+}
+
+function isInteger(s)
+{   var i;
+    for (i = 0; i < s.length; i++)
+    {   
+        // Check that current character is number.
+        var c = s.charAt(i);
+        if (((c < "0") || (c > "9"))) return false;
+    }
+    // All characters are numbers.
+    return true;
+}
+
+function logit()	{
+if (!chkitem())	{
+    if (!chkloga())	{
+	if (!chkfault())	{
+		if (!chksubcode())	{
+			doit();
+			}
+		}
+	}
+    }
+}
+
+function doit() {
+if (document.oldentry.itemclass.value != '')	{
+	var oldnode = ' <row>\r\n  <Sub>'+document.oldentry.itemclass.value+'-'+document.oldentry.subclass.value+'</Sub >\r\n';
+	}
+else	{var oldnode = ' <row>\r\n  <Sub></Sub >\r\n';}
+var oldnode = oldnode+'  <Itemdesc>'+document.oldentry.Idesc.value+'</Itemdesc >\r\n  <Asset_No>';
+var oldnode = oldnode+document.oldentry.Asset.value+'</Asset_No >\r\n  <DPT>'+document.oldentry.DPTMT.value+'</DPT >\r\n  <OOS_Tx>';
+var oldnode = oldnode+document.oldentry.OOSxfer.value+'</OOS_Tx >\r\n  <Log_by>'+document.oldentry.Logby.value;
+var oldnode = oldnode+'</Log_by >\r\n  <Log_Date>'+document.oldentry.Logdate.value+'</Log_Date >\r\n  <Reported_by>';
+var oldnode = oldnode+document.oldentry.Reportby.value+'</Reported_by >\r\n  <Fault_Description>'+document.oldentry.Fault.value+'</Fault_Description >\r\n  <Repair_Description>';
+var oldnode = oldnode+document.oldentry.Repair.value+'</Repair_Description >\r\n  <Assigned_to>'+document.oldentry.Assto.value+'</Assigned_to >\r\n  <Assign_Date>';
+var oldnode = oldnode+document.oldentry.Assdate.value+'</Assign_Date >\r\n  <Outsource_JN>'+document.oldentry.OutJN.value+'</Outsource_JN >\r\n  <Returned>';
+var oldnode = oldnode+document.oldentry.Return.value+'</Returned >\r\n  <Junked>'+document.oldentry.Junk.value+'</Junked >\r\n </row>';
+
+var newnode = ' <row>\r\n  <Sub>'+document.logedit.itemclass.value+'-'+document.logedit.subclass.value+'</Sub >\r\n  <Itemdesc>'+document.logedit.Idesc.value+'</Itemdesc >\r\n  <Asset_No>';
+var newnode = newnode+document.logedit.Asset.value+'</Asset_No >\r\n  <DPT>'+document.logedit.DPTMT.value+'</DPT >\r\n  <OOS_Tx>';
+var newnode = newnode+document.logedit.OOSxfer.value+'</OOS_Tx >\r\n  <Log_by>'+document.logedit.Logby.value;
+var newnode = newnode+'</Log_by >\r\n  <Log_Date>'+document.logedit.Logdate.value+'</Log_Date >\r\n  <Reported_by>';
+var newnode = newnode+document.logedit.Reportby.value+'</Reported_by >\r\n  <Fault_Description>'+document.logedit.Fault.value+'</Fault_Description >\r\n  <Repair_Description>';
+var newnode = newnode+document.logedit.Repair.value+'</Repair_Description >\r\n  <Assigned_to>'+document.logedit.Assto.value+'</Assigned_to >\r\n  <Assign_Date>';
+var newnode = newnode+document.logedit.Assdate.value+'</Assign_Date >\r\n  <Outsource_JN>'+document.logedit.OutJN.value+'</Outsource_JN >\r\n  <Returned>';
+var newnode = newnode+document.logedit.Return.value+'</Returned >\r\n  <Junked>'+document.logedit.Junk.value+'</Junked >\r\n </row>';
+
+if (oldnode.indexOf('&') != -1)	{
+	oldnode = oldnode.slice(0,oldnode.indexOf('&'))+'\&amp;'+oldnode.slice(oldnode.indexOf('&')+1);
+	}
+
+if (oldnode.indexOf('+') != -1)	{
+	oldnode = oldnode.slice(0,oldnode.indexOf('+'))+'\\'+oldnode.slice(oldnode.indexOf('+'));
+	}
+
+if (newnode.indexOf('&') != -1)	{
+	newnode = newnode.slice(0,newnode.indexOf('&'))+'\&amp;'+newnode.slice(newnode.indexOf('&')+1);
+	}
+
+var oldversion = new RegExp(oldnode);
+
+var fso = new ActiveXObject("Scripting.FileSystemObject");
+var oldfile = fso.OpenTextFile("h:\\_Warehouse\\OOS\\ooslog.xml", 1);
+var oldcontents = oldfile.ReadAll();
+
+oldfile.Close();
+
+var newcontents = oldcontents.replace(oldversion,newnode);
+var newFile = fso.OpenTextFile("h:\\_Warehouse\\OOS\\ooslog.xml", 2);
+newFile.WriteLine(newcontents);
+
+newFile.Close();
+window.opener.location.reload();
+window.close();
+}
+
+</script>
+
+</head>
+
+<body style="background:lightgrey;font-family:Arial,Helvetica;" onLoad="document.logedit.Repair.focus();">
+
+<H1>Edit log entry</H1>
+<P>Please make changes below:</P>
+
+<form name="logedit">
+
+<table border="1" cellspacing="0" style="background:white;" frame="box" width="100%">
+	<tr>
+		<td colspan="2"><div id="subdesc"></div></td>
+	</tr><tr>
+		<th align="center" style="background:maroon;color:white;" width="50%">OOS Transfer</th>
+		<td align="center"><input type="text" name="OOSxfer" maxlength="5" size="5" onBlur="validJN(document.logedit.OOSxfer,this.value)"></td>
+	</tr><tr>
+		<th align="center" style="background:maroon;color:white;">Logged By</th>
+		<td align="center"><input type="text" name="Logby"/>
+			<input type="button" value=" .. " onclick="loggerby.style.display='';">
+			<DIV ID="loggerby" STYLE="position:relative;display:none;">
+				<select name="Logger" onChange="document.logedit.Logby.value=this.options[this.selectedIndex].value;loggerby.style.display='none';">
+					<option value="">please select</option>
+					<option value="Denis">Denis</option>
+					<option value="Evan P.">Evan P.</option>
+					<option value="Gerrard J.">Gerrard J.</option>
+					<option value="Johnathan T.">Johnathan T.</option>
+					<option value="Layton H.">Layton H.</option>
+					<option value="Louie">Louie</option>
+					<option value="Martin Sharkey">Martin Sharkey</option>
+					<option value="Mic">Mic</option>
+					<option value="Todd">Todd</option>
+					<option value="Tom S.">Tom S.</option>
+				</select>
+			</DIV></td>
+	</tr><tr>
+		<th align="center" style="background:maroon;color:white;">Log Date</th>
+		<td align="center"><input type="text" name="Logdate" size='10' maxlength="10" onFocus="javascript:vDateType='3'" onKeyUp="DateFormat(this,this.value,event,false,'3')" onBlur="DateFormat(this,this.value,event,true,'3')">
+			<A HREF="#" onClick="cal.select(document.logedit.Logdate,'anchor1','dd/MM/y'); return false;" name="anchor1" id="anchor1"><img border="0" src="cal.gif"/></a></td>
+	</tr><tr>
+		<th align="center" style="background:maroon;color:white;">Reported By</th>
+		<td align="center"><input type="text" name="Reportby"></td>
+	</tr><tr>
+		<th align="center" style="background:maroon;color:white;">Fault Description</th>
+		<td align="center"><input type="text" name="Fault" size="40"></td>
+	</tr><tr>
+		<th align="center" style="background:maroon;color:white;">Repair Description</th>
+		<td align="center"><input type="text" name="Repair" size="40"></td>
+	</tr><tr>
+		<th align="center" style="background:maroon;color:white;">Assigned To</th>
+		<td align="center"><input type="text" name="Assto">
+			<input type="button" value=" .. " onclick="assign.style.display='';">
+			<DIV ID="assign" STYLE="position:relative;display:none;">
+				<select name="Assigned" onChange="document.logedit.Assto.value=this.options[this.selectedIndex].value;assign.style.display='none';">
+					<option value="">please select</option>
+					<option value="Bob">Bob</option>
+					<option value="Levko">Levko</option>
+					<option value="Martin Sharkey">Martin Sharkey</option>
+					<option value="Todd">Todd</option>
+					<option value="Bytecraft">Bytecraft</option>
+					<option value="RGB Integration">RGB Integration</option>
+					<option value="Technical Workshops">Technical Workshops</option>
+				</select>
+			</DIV></td>
+	</tr><tr>
+		<th align="center" style="background:maroon;color:white;">Assign Date</th>
+		<td align="center"><input type="text" name="Assdate" size='10' maxlength="10" onFocus="javascript:vDateType='3'" onKeyUp="DateFormat(this,this.value,event,false,'3')" onBlur="DateFormat(this,this.value,event,true,'3')">
+			<A HREF="#" onClick="cal.select(document.logedit.Assdate,'anchor2','dd/MM/y'); return false;" name="anchor2" id="anchor2"><img border="0" src="cal.gif"/></a></td>
+	</tr><tr>
+		<th align="center" style="background:maroon;color:white;">OutSource Job #</th>
+		<td align="center"><input type="text" name="OutJN" maxlength="5" size="5" onBlur="validJN(document.logedit.OutJN,this.value)"></td>
+	</tr><tr>
+		<th align="center" style="background:maroon;color:white;">Returned Date</th>
+		<td align="center"><input type="text" name="Return" class="returndate" size='10' maxlength="10" onFocus="javascript:vDateType='3'" onKeyUp="DateFormat(this,this.value,event,false,'3')" onBlur="DateFormat(this,this.value,event,true,'3')">
+			<A HREF="#" onClick="cal.select(document.logedit.Return,'anchor3','dd/MM/y'); return false;" name="anchor3" id="anchor3"><img border="0" src="cal.gif"/></a></td>
+	</tr><tr>
+		<th align="center" style="background:maroon;color:white;">Junked Date</th>
+		<td align="center"><input type="text" name="Junk" class="junkdate" size='10' maxlength="10" onFocus="javascript:vDateType='3'" onKeyUp="DateFormat(this,this.value,event,false,'3')" onBlur="DateFormat(this,this.value,event,true,'3')">
+			<A HREF="#" onClick="cal.select(document.logedit.Junk,'anchor4','dd/MM/y'); return false;" name="anchor4" id="anchor4"><img border="0" src="cal.gif"/></a></td>
+	</tr>
+</table>
+
+<table width="100%"><tr>
+	<td align="center"><input type="reset" value="RESET"/></td>
+	<td align="center"><input type="button" value="LOG IT" onClick="logit()"/></td>
+</tr></table>
+
+</form>
+
+<div id="logfilla"></div>
+
+<DIV ID="testdiv1" STYLE="position:absolute;visibility:hidden;background-color:white;layer-background-color:white;"></DIV>
+
+<script type="text/javascript">
+
+function filltable(selitem)	{
+
+	var xslt = new ActiveXObject("Msxml2.XSLTemplate");
+	var xslDoc = new ActiveXObject("Msxml2.FreeThreadedDOMDocument");
+	var xslProc;
+	xslDoc.async = false;
+	xslDoc.resolveExternals = false;
+	xslDoc.load("editem.xsl");
+	xslt.stylesheet = xslDoc;
+	var xmlDoc = new ActiveXObject("Msxml2.DOMDocument");
+	xmlDoc.async = false;
+	xmlDoc.resolveExternals = false;
+	xmlDoc.load("ooslog.xml");
+	xslProc = xslt.createProcessor();
+	xslProc.input = xmlDoc;
+	xslProc.addParameter("selitem", selitem);
+	xslProc.transform();
+	logfilla.innerHTML=xslProc.output;
+
+}
+
+populateme = opener.document.hiddenForm.itempos.value;
+
+autofill('');
+
+filltable(populateme);
+
+document.logedit.itemclass.value = document.oldentry.itemclass.value;
+document.logedit.subclass.value = document.oldentry.subclass.value;
+document.logedit.Idesc.value = document.oldentry.Idesc.value;
+document.logedit.Asset.value = document.oldentry.Asset.value;
+document.logedit.DPTMT.value = document.oldentry.DPTMT.value;
+document.logedit.OOSxfer.value = document.oldentry.OOSxfer.value;
+document.logedit.Logby.value = document.oldentry.Logby.value;
+document.logedit.Logdate.value = document.oldentry.Logdate.value;
+document.logedit.Reportby.value = document.oldentry.Reportby.value;
+document.logedit.Fault.value = document.oldentry.Fault.value;
+document.logedit.Repair.value = document.oldentry.Repair.value;
+document.logedit.Assto.value = document.oldentry.Assto.value;
+document.logedit.Assdate.value = document.oldentry.Assdate.value;
+document.logedit.OutJN.value = document.oldentry.OutJN.value;
+document.logedit.Return.value = document.oldentry.Return.value;
+document.logedit.Junk.value = document.oldentry.Junk.value;
+
+function autofill(assnum)	{
+
+var foundit = '';
+
+if (assnum != '')	{
+
+	var acidtest = '<assetnum>'+assnum+'</assetnum >';
+	var fso = new ActiveXObject("Scripting.FileSystemObject");
+	var f = fso.OpenTextFile("h:\\_Warehouse\\OOS\\assets.xml", 1);
+	var contents = f.ReadAll();
+	f.Close();
+
+
+	if(contents.indexOf(acidtest)==-1)	{
+		foundit = 'notanasset';
+		}
+	}
+
+var xslt = new ActiveXObject("Msxml2.XSLTemplate");
+var xslDoc = new ActiveXObject("Msxml2.FreeThreadedDOMDocument");
+var xslProc;
+xslDoc.async = false;
+xslDoc.resolveExternals = false;
+xslDoc.load("selitem.xsl");
+xslt.stylesheet = xslDoc;
+var xmlDoc = new ActiveXObject("Msxml2.DOMDocument");
+xmlDoc.async = false;
+xmlDoc.resolveExternals = false;
+xmlDoc.load("assets.xml");
+xslProc = xslt.createProcessor();
+xslProc.input = xmlDoc;
+xslProc.addParameter("assnum", assnum);
+xslProc.addParameter("foundit", foundit);
+xslProc.transform();
+subdesc.innerHTML=xslProc.output;
+
+}
+
+function autodate(f)	{
+
+var mydate=new Date()
+var theyear=mydate.getYear()
+if (theyear < 1000)
+theyear+=1900
+var theday=mydate.getDay()
+var themonth=mydate.getMonth()+1
+if (themonth<10)
+themonth="0"+themonth
+var theday=mydate.getDate()
+if (theday<10)
+theday="0"+theday
+
+var displayfirst=theday
+var displaysecond=themonth
+var displaythird=theyear
+
+////////////////////////////////////
+
+f.value=displayfirst+"/"+displaysecond+"/"+displaythird
+
+if (f.name=='Return')
+document.logedit.Junk.value=''
+if (f.name=='Junk')
+document.logedit.Return.value=''
+
+}
+
+/*
+This code - apart from where other sources have been credited - was entirely
+written and developed by Mic Mehmet for Staging Connections.
+THE WORK (AS DEFINED BELOW) IS PROVIDED UNDER THE TERMS OF THIS CREATIVE COMMONS PUBLIC LICENSE ("CCPL" OR "LICENSE"). THE WORK IS PROTECTED BY COPYRIGHT AND/OR OTHER APPLICABLE LAW. ANY USE OF THE WORK OTHER THAN AS AUTHORIZED UNDER THIS LICENSE OR COPYRIGHT LAW IS PROHIBITED.
+
+BY EXERCISING ANY RIGHTS TO THE WORK PROVIDED HERE, YOU ACCEPT AND AGREE TO BE BOUND BY THE TERMS OF THIS LICENSE. TO THE EXTENT THIS LICENSE MAY BE CONSIDERED TO BE A CONTRACT, THE LICENSOR GRANTS YOU THE RIGHTS CONTAINED HERE IN CONSIDERATION OF YOUR ACCEPTANCE OF SUCH TERMS AND CONDITIONS.
+
+1. Definitions
+
+   1. "Adaptation" means a work based upon the Work, or upon the Work and other pre-existing works, such as a translation, adaptation, derivative work, arrangement of music or other alterations of a literary or artistic work, or phonogram or performance and includes cinematographic adaptations or any other form in which the Work may be recast, transformed, or adapted including in any form recognizably derived from the original, except that a work that constitutes a Collection will not be considered an Adaptation for the purpose of this License. For the avoidance of doubt, where the Work is a musical work, performance or phonogram, the synchronization of the Work in timed-relation with a moving image ("synching") will be considered an Adaptation for the purpose of this License.
+   2. "Collection" means a collection of literary or artistic works, such as encyclopedias and anthologies, or performances, phonograms or broadcasts, or other works or subject matter other than works listed in Section 1(f) below, which, by reason of the selection and arrangement of their contents, constitute intellectual creations, in which the Work is included in its entirety in unmodified form along with one or more other contributions, each constituting separate and independent works in themselves, which together are assembled into a collective whole. A work that constitutes a Collection will not be considered an Adaptation (as defined below) for the purposes of this License.
+   3. "Creative Commons Compatible License" means a license that is listed at http://creativecommons.org/compatiblelicenses that has been approved by Creative Commons as being essentially equivalent to this License, including, at a minimum, because that license: (i) contains terms that have the same purpose, meaning and effect as the License Elements of this License; and, (ii) explicitly permits the relicensing of adaptations of works made available under that license under this License or a Creative Commons jurisdiction license with the same License Elements as this License.
+   4. "Distribute" means to make available to the public the original and copies of the Work or Adaptation, as appropriate, through sale or other transfer of ownership.
+   5. "License Elements" means the following high-level license attributes as selected by Licensor and indicated in the title of this License: Attribution, ShareAlike.
+   6. "Licensor" means the individual, individuals, entity or entities that offer(s) the Work under the terms of this License.
+   7. "Original Author" means, in the case of a literary or artistic work, the individual, individuals, entity or entities who created the Work or if no individual or entity can be identified, the publisher; and in addition (i) in the case of a performance the actors, singers, musicians, dancers, and other persons who act, sing, deliver, declaim, play in, interpret or otherwise perform literary or artistic works or expressions of folklore; (ii) in the case of a phonogram the producer being the person or legal entity who first fixes the sounds of a performance or other sounds; and, (iii) in the case of broadcasts, the organization that transmits the broadcast.
+   8. "Work" means the literary and/or artistic work offered under the terms of this License including without limitation any production in the literary, scientific and artistic domain, whatever may be the mode or form of its expression including digital form, such as a book, pamphlet and other writing; a lecture, address, sermon or other work of the same nature; a dramatic or dramatico-musical work; a choreographic work or entertainment in dumb show; a musical composition with or without words; a cinematographic work to which are assimilated works expressed by a process analogous to cinematography; a work of drawing, painting, architecture, sculpture, engraving or lithography; a photographic work to which are assimilated works expressed by a process analogous to photography; a work of applied art; an illustration, map, plan, sketch or three-dimensional work relative to geography, topography, architecture or science; a performance; a broadcast; a phonogram; a compilation of data to the extent it is protected as a copyrightable work; or a work performed by a variety or circus performer to the extent it is not otherwise considered a literary or artistic work.
+   9. "You" means an individual or entity exercising rights under this License who has not previously violated the terms of this License with respect to the Work, or who has received express permission from the Licensor to exercise rights under this License despite a previous violation.
+  10. "Publicly Perform" means to perform public recitations of the Work and to communicate to the public those public recitations, by any means or process, including by wire or wireless means or public digital performances; to make available to the public Works in such a way that members of the public may access these Works from a place and at a place individually chosen by them; to perform the Work to the public by any means or process and the communication to the public of the performances of the Work, including by public digital performance; to broadcast and rebroadcast the Work by any means including signs, sounds or images.
+  11. "Reproduce" means to make copies of the Work by any means including without limitation by sound or visual recordings and the right of fixation and reproducing fixations of the Work, including storage of a protected performance or phonogram in digital form or other electronic medium.
+
+2. Fair Dealing Rights. Nothing in this License is intended to reduce, limit, or restrict any uses free from copyright or rights arising from limitations or exceptions that are provided for in connection with the copyright protection under copyright law or other applicable laws.
+
+3. License Grant. Subject to the terms and conditions of this License, Licensor hereby grants You a worldwide, royalty-free, non-exclusive, perpetual (for the duration of the applicable copyright) license to exercise the rights in the Work as stated below:
+
+   1. to Reproduce the Work, to incorporate the Work into one or more Collections, and to Reproduce the Work as incorporated in the Collections;
+   2. to create and Reproduce Adaptations provided that any such Adaptation, including any translation in any medium, takes reasonable steps to clearly label, demarcate or otherwise identify that changes were made to the original Work. For example, a translation could be marked "The original work was translated from English to Spanish," or a modification could indicate "The original work has been modified.";
+   3. to Distribute and Publicly Perform the Work including as incorporated in Collections; and,
+   4. to Distribute and Publicly Perform Adaptations.
+   5.
+
+      For the avoidance of doubt:
+         1. Non-waivable Compulsory License Schemes. In those jurisdictions in which the right to collect royalties through any statutory or compulsory licensing scheme cannot be waived, the Licensor reserves the exclusive right to collect such royalties for any exercise by You of the rights granted under this License;
+         2. Waivable Compulsory License Schemes. In those jurisdictions in which the right to collect royalties through any statutory or compulsory licensing scheme can be waived, the Licensor waives the exclusive right to collect such royalties for any exercise by You of the rights granted under this License; and,
+         3. Voluntary License Schemes. The Licensor waives the right to collect royalties, whether individually or, in the event that the Licensor is a member of a collecting society that administers voluntary licensing schemes, via that society, from any exercise by You of the rights granted under this License.
+
+The above rights may be exercised in all media and formats whether now known or hereafter devised. The above rights include the right to make such modifications as are technically necessary to exercise the rights in other media and formats. Subject to Section 8(f), all rights not expressly granted by Licensor are hereby reserved.
+
+4. Restrictions. The license granted in Section 3 above is expressly made subject to and limited by the following restrictions:
+
+   1. You may Distribute or Publicly Perform the Work only under the terms of this License. You must include a copy of, or the Uniform Resource Identifier (URI) for, this License with every copy of the Work You Distribute or Publicly Perform. You may not offer or impose any terms on the Work that restrict the terms of this License or the ability of the recipient of the Work to exercise the rights granted to that recipient under the terms of the License. You may not sublicense the Work. You must keep intact all notices that refer to this License and to the disclaimer of warranties with every copy of the Work You Distribute or Publicly Perform. When You Distribute or Publicly Perform the Work, You may not impose any effective technological measures on the Work that restrict the ability of a recipient of the Work from You to exercise the rights granted to that recipient under the terms of the License. This Section 4(a) applies to the Work as incorporated in a Collection, but this does not require the Collection apart from the Work itself to be made subject to the terms of this License. If You create a Collection, upon notice from any Licensor You must, to the extent practicable, remove from the Collection any credit as required by Section 4(c), as requested. If You create an Adaptation, upon notice from any Licensor You must, to the extent practicable, remove from the Adaptation any credit as required by Section 4(c), as requested.
+   2. You may Distribute or Publicly Perform an Adaptation only under the terms of: (i) this License; (ii) a later version of this License with the same License Elements as this License; (iii) a Creative Commons jurisdiction license (either this or a later license version) that contains the same License Elements as this License (e.g., Attribution-ShareAlike 3.0 US)); (iv) a Creative Commons Compatible License. If you license the Adaptation under one of the licenses mentioned in (iv), you must comply with the terms of that license. If you license the Adaptation under the terms of any of the licenses mentioned in (i), (ii) or (iii) (the "Applicable License"), you must comply with the terms of the Applicable License generally and the following provisions: (I) You must include a copy of, or the URI for, the Applicable License with every copy of each Adaptation You Distribute or Publicly Perform; (II) You may not offer or impose any terms on the Adaptation that restrict the terms of the Applicable License or the ability of the recipient of the Adaptation to exercise the rights granted to that recipient under the terms of the Applicable License; (III) You must keep intact all notices that refer to the Applicable License and to the disclaimer of warranties with every copy of the Work as included in the Adaptation You Distribute or Publicly Perform; (IV) when You Distribute or Publicly Perform the Adaptation, You may not impose any effective technological measures on the Adaptation that restrict the ability of a recipient of the Adaptation from You to exercise the rights granted to that recipient under the terms of the Applicable License. This Section 4(b) applies to the Adaptation as incorporated in a Collection, but this does not require the Collection apart from the Adaptation itself to be made subject to the terms of the Applicable License.
+   3. If You Distribute, or Publicly Perform the Work or any Adaptations or Collections, You must, unless a request has been made pursuant to Section 4(a), keep intact all copyright notices for the Work and provide, reasonable to the medium or means You are utilizing: (i) the name of the Original Author (or pseudonym, if applicable) if supplied, and/or if the Original Author and/or Licensor designate another party or parties (e.g., a sponsor institute, publishing entity, journal) for attribution ("Attribution Parties") in Licensor's copyright notice, terms of service or by other reasonable means, the name of such party or parties; (ii) the title of the Work if supplied; (iii) to the extent reasonably practicable, the URI, if any, that Licensor specifies to be associated with the Work, unless such URI does not refer to the copyright notice or licensing information for the Work; and (iv) , consistent with Ssection 3(b), in the case of an Adaptation, a credit identifying the use of the Work in the Adaptation (e.g., "French translation of the Work by Original Author," or "Screenplay based on original Work by Original Author"). The credit required by this Section 4(c) may be implemented in any reasonable manner; provided, however, that in the case of a Adaptation or Collection, at a minimum such credit will appear, if a credit for all contributing authors of the Adaptation or Collection appears, then as part of these credits and in a manner at least as prominent as the credits for the other contributing authors. For the avoidance of doubt, You may only use the credit required by this Section for the purpose of attribution in the manner set out above and, by exercising Your rights under this License, You may not implicitly or explicitly assert or imply any connection with, sponsorship or endorsement by the Original Author, Licensor and/or Attribution Parties, as appropriate, of You or Your use of the Work, without the separate, express prior written permission of the Original Author, Licensor and/or Attribution Parties.
+   4. Except as otherwise agreed in writing by the Licensor or as may be otherwise permitted by applicable law, if You Reproduce, Distribute or Publicly Perform the Work either by itself or as part of any Adaptations or Collections, You must not distort, mutilate, modify or take other derogatory action in relation to the Work which would be prejudicial to the Original Author's honor or reputation. Licensor agrees that in those jurisdictions (e.g. Japan), in which any exercise of the right granted in Section 3(b) of this License (the right to make Adaptations) would be deemed to be a distortion, mutilation, modification or other derogatory action prejudicial to the Original Author's honor and reputation, the Licensor will waive or not assert, as appropriate, this Section, to the fullest extent permitted by the applicable national law, to enable You to reasonably exercise Your right under Section 3(b) of this License (right to make Adaptations) but not otherwise.
+
+5. Representations, Warranties and Disclaimer
+
+UNLESS OTHERWISE MUTUALLY AGREED TO BY THE PARTIES IN WRITING, LICENSOR OFFERS THE WORK AS-IS AND MAKES NO REPRESENTATIONS OR WARRANTIES OF ANY KIND CONCERNING THE WORK, EXPRESS, IMPLIED, STATUTORY OR OTHERWISE, INCLUDING, WITHOUT LIMITATION, WARRANTIES OF TITLE, MERCHANTIBILITY, FITNESS FOR A PARTICULAR PURPOSE, NONINFRINGEMENT, OR THE ABSENCE OF LATENT OR OTHER DEFECTS, ACCURACY, OR THE PRESENCE OF ABSENCE OF ERRORS, WHETHER OR NOT DISCOVERABLE. SOME JURISDICTIONS DO NOT ALLOW THE EXCLUSION OF IMPLIED WARRANTIES, SO SUCH EXCLUSION MAY NOT APPLY TO YOU.
+
+6. Limitation on Liability. EXCEPT TO THE EXTENT REQUIRED BY APPLICABLE LAW, IN NO EVENT WILL LICENSOR BE LIABLE TO YOU ON ANY LEGAL THEORY FOR ANY SPECIAL, INCIDENTAL, CONSEQUENTIAL, PUNITIVE OR EXEMPLARY DAMAGES ARISING OUT OF THIS LICENSE OR THE USE OF THE WORK, EVEN IF LICENSOR HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.
+
+7. Termination
+
+   1. This License and the rights granted hereunder will terminate automatically upon any breach by You of the terms of this License. Individuals or entities who have received Adaptations or Collections from You under this License, however, will not have their licenses terminated provided such individuals or entities remain in full compliance with those licenses. Sections 1, 2, 5, 6, 7, and 8 will survive any termination of this License.
+   2. Subject to the above terms and conditions, the license granted here is perpetual (for the duration of the applicable copyright in the Work). Notwithstanding the above, Licensor reserves the right to release the Work under different license terms or to stop distributing the Work at any time; provided, however that any such election will not serve to withdraw this License (or any other license that has been, or is required to be, granted under the terms of this License), and this License will continue in full force and effect unless terminated as stated above.
+
+8. Miscellaneous
+
+   1. Each time You Distribute or Publicly Perform the Work or a Collection, the Licensor offers to the recipient a license to the Work on the same terms and conditions as the license granted to You under this License.
+   2. Each time You Distribute or Publicly Perform an Adaptation, Licensor offers to the recipient a license to the original Work on the same terms and conditions as the license granted to You under this License.
+   3. If any provision of this License is invalid or unenforceable under applicable law, it shall not affect the validity or enforceability of the remainder of the terms of this License, and without further action by the parties to this agreement, such provision shall be reformed to the minimum extent necessary to make such provision valid and enforceable.
+   4. No term or provision of this License shall be deemed waived and no breach consented to unless such waiver or consent shall be in writing and signed by the party to be charged with such waiver or consent.
+   5. This License constitutes the entire agreement between the parties with respect to the Work licensed here. There are no understandings, agreements or representations with respect to the Work not specified here. Licensor shall not be bound by any additional provisions that may appear in any communication from You. This License may not be modified without the mutual written agreement of the Licensor and You.
+   6. The rights granted under, and the subject matter referenced, in this License were drafted utilizing the terminology of the Berne Convention for the Protection of Literary and Artistic Works (as amended on September 28, 1979), the Rome Convention of 1961, the WIPO Copyright Treaty of 1996, the WIPO Performances and Phonograms Treaty of 1996 and the Universal Copyright Convention (as revised on July 24, 1971). These rights and subject matter take effect in the relevant jurisdiction in which the License terms are sought to be enforced according to the corresponding provisions of the implementation of those treaty provisions in the applicable national law. If the standard suite of rights granted under applicable copyright law includes additional rights not granted under this License, such additional rights are deemed to be included in the License; this License is not intended to restrict the license of any rights under applicable law.
+*/
+
+</script>
+
+</body>
+</html>

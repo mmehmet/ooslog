@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+
+
+<document>
+
+ <row>
+
+  <Sub>46-4F</Sub >
+
+  <Itemdesc>Chain Block 1T 6M</Itemdesc >
+
+  <Asset_No>M12803</Asset_No >
+
+  <DPT>01</DPT >
+
+  <OOS_Tx></OOS_Tx >
+
+  <Log_by></Log_by >
+
+  <Log_Date></Log_Date >
+
+  <Reported_by></Reported_by >
+
+  <Fault_Description>Jammed - see 70406</Fault_Description >
+
+  <Repair_Description></Repair_Description >
+
+  <Assigned_to>Showtech</Assigned_to >
+
+  <Assign_Date></Assign_Date >
+
+  <Outsource_JN></Outsource_JN >
+
+  <Returned>05-Jul-06</Returned >
+
+  <Junked></Junked >
+
+ </row>
+
+ <row>
+
+  <Sub>46-4F</Sub >
+
+  <Itemdesc>Chain Block 1T 6M</Itemdesc >
+
+  <Asset_No>M12797</Asset_No >
+
+  <DPT>01</DPT >
+
+  <OOS_Tx></OOS_Tx >
+
+  <Log_by></Log_by >
+
+  <Log_Date></Log_Date >
+
+  <Reported_by></Reported_by >
+
+  <Fault_Description>Slipping - see 70406</Fault_Description >
+
+  <Repair_Description></Repair_Description >
+
+  <Assigned_to>Showtech</Assigned_to >
+
+  <Assign_Date></Assign_Date >
+
+  <Outsource_JN></Outsource_JN >
+
+  <Returned>05-Jul-06</Returned >
+
+  <Junked></Junked >
+
+ </row>
+
+ <row>
+
+  <Sub>46-4F</Sub >
+
+  <Itemdesc>Chain Block 1T 6M</Itemdesc >
+
+  <Asset_No>M12801</Asset_No >
+
+  <DPT>01</DPT >
+
+  <OOS_Tx></OOS_Tx >
+
+  <Log_by></Log_by >
+
+  <Log_Date></Log_Date >
+
+  <Reported_by></Reported_by >
+
+  <Fault_Description>Slipping - see 70406</Fault_Description >
+
+  <Repair_Description></Repair_Description >
+
+  <Assigned_to>Showtech</Assigned_to >
+
+  <Assign_Date></Assign_Date >
+
+  <Outsource_JN></Outsource_JN >
+
+  <Returned>05-Jul-06</Returned >
+
+  <Junked></Junked >
+
+ </row>
+
+ <row>
+
+  <Sub>11-04</Sub >
+
+  <Itemdesc>Mon 27" Sony PVM</Itemdesc >
+
+  <Asset_No>M11250</Asset_No >
+
+  <DPT>01</DPT >
+
+  <OOS_Tx></OOS_Tx >
+
+  <Log_by></Log_by >
+
+  <Log_Date>26/07/2006</Log_Date >
+
+  <Reported_by></Reported_by >
+
+  <Fault_Description>none given</Fault_Description >
+
+  <Repair_Description></Repair_Description >
+
+  <Assigned_to></Assigned_to >
+
+  <Assign_Date></Assign_Date >
+
+  <Outsource_JN></Outsource_JN >
+
+  <Returned></Returned >
+
+  <Junked>26/07/2006</Junked >
+
+ </row>
+
+ <row>
+
+  <Sub>84-34</Sub >
+
+  <Itemdesc>Cont DMX 24ch LSC Atom 24</Itemdesc >
+
+  <Asset_No>M08128</Asset_No >
+
+  <DPT>01</DPT >
+
+  <OOS_Tx></OOS_Tx >
+
+  <Log_by>Evan P.</Log_by >
+
+  <Log_Date>05/09/2007</Log_Date >
+
+  <Reported_by>Evan</Reported_by >
+
+  <Fault_Description>test and tag</Fault_Description >
+
+  <Repair_Description></Repair_Description >
+
+  <Assigned_to></Assigned_to >
+
+  <Assign_Date></Assign_Date >
+
+  <Outsource_JN></Outsource_JN >
+
+  <Returned></Returned >
+
+  <Junked></Junked >
+
+ </row>
+
+ <row>
+
+  <Sub>75-35</Sub >
+
+  <Itemdesc>R/Mic UHF Tx H/H Shure U258MA</Itemdesc >
+
+  <Asset_No>M16422</Asset_No >
+
+  <DPT>09</DPT >
+
+  <OOS_Tx>97389</OOS_Tx >
+
+  <Log_by>Johnathan T.</Log_by >
+
+  <Log_Date>05/09/2007</Log_Date >
+
+  <Reported_by>Graeme Brown</Reported_by >
+
+  <Fault_Description>High end noise and echo sound</Fault_Description >
+
+  <Repair_Description></Repair_Description >
+
+  <Assigned_to></Assigned_to >
+
+  <Assign_Date></Assign_Date >
+
+  <Outsource_JN></Outsource_JN >
+
+  <Returned></Returned >
+
+  <Junked></Junked >
+
+ </row>
+
+ <row>
+
+  <Sub>36-85</Sub >
+
+  <Itemdesc>VGA-Cat5 Rx Magenta AK500</Itemdesc >
+
+  <Asset_No>M16209</Asset_No >
+
+  <DPT>01</DPT >
+
+  <OOS_Tx></OOS_Tx >
+
+  <Log_by>Martin Sharkey</Log_by >
+
+  <Log_Date>01/11/2007</Log_Date >
+
+  <Reported_by>Chris Vik</Reported_by >
+
+  <Fault_Description>Blue Image</Fault_Description >
+
+  <Repair_Description></Repair_Description >
+
+  <Assigned_to></Assigned_to >
+
+  <Assign_Date></Assign_Date >
+
+  <Outsource_JN></Outsource_JN >
+
+  <Returned></Returned >
+
+  <Junked></Junked >
+
+ </row>
+
+</document>
+
